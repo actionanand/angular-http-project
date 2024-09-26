@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+
+import { AvailablePlacesComponent } from './places/available-places/available-places.component';
+import { UserPlacesComponent } from './places/user-places/user-places.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.css',
+  imports: [AvailablePlacesComponent, UserPlacesComponent],
 })
-export class AppComponent {
-  title = 'Essentials 18';
-}
+export class AppComponent {}
