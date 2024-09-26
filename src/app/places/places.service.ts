@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, signal } from '@angular/core';
 
 import { Place } from './place.model';
