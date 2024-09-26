@@ -2,6 +2,13 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.3.
 
+## How to run backend (Express App)
+
+1. Navigate to **backend** folder by `cd backend/`
+2. Install dependencies `yarn install`
+3. Run the express server `yarn start`
+4. Open the URL `http://localhost:3000/places` in your browser
+
 ## Cloning Guide
 
 1.  Clone only the remote primary HEAD (default: origin/master)
