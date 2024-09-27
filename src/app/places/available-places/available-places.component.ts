@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 
-import { Place } from '../place.model';
+import { Place } from '../../models/place.model';
 import { PlacesComponent } from '../places.component';
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 

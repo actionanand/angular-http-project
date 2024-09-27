@@ -9,6 +9,16 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 3. Run the express server `yarn start`
 4. Open the URL `http://localhost:3000/places` in your browser
 
+## Configure `proxy` file
+
+Change the value of `target` in `proxy file` as your backend api url
+
+## Run Angular with `proxy` server
+
+```sh
+yarn develop
+```
+
 ## Cloning Guide
 
 1.  Clone only the remote primary HEAD (default: origin/master)
