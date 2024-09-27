@@ -35,7 +35,7 @@ export class PlacesService {
   private fetchPlaces(url: string, errMsg: string) {
     return this.http
       .get<{ places: Place[] }>(url, {
-        observe: 'response',
+        observe: 'response', // it'll give full response including status code
       })
       .pipe(
         tap(rawResp => {
