@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { catchError, map, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 import { Place } from '../models/place.model';
 
@@ -8,15 +12,40 @@ import { Place } from '../models/place.model';
 })
 export class PlacesService {
   private userPlaces = signal<Place[]>([]);
-  private readonly url = '/api/v2/places';
-
   loadedUserPlaces = this.userPlaces.asReadonly();
 
-  loadAvailablePlaces() {}
+  private http = inject(HttpClient);
 
-  loadUserPlaces() {}
+  loadAvailablePlaces() {
+    return this.fetchPlaces('/api/v2/places', 'Error loading available places!');
+  }
 
-  addPlaceToUserPlaces(place: Place) {}
+  loadUserPlaces() {
+    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!');
+  }
+
+  addPlaceToUserPlaces(placeId: string) {
+    return this.http.put('/api/v2/user-places', {
+      placeId,
+    });
+  }
 
   removeUserPlace(place: Place) {}
+
+  private fetchPlaces(url: string, errMsg: string) {
+    return this.http
+      .get<{ places: Place[] }>(url, {
+        observe: 'response', // it'll give full response including status code
+      })
+      .pipe(
+        tap(rawResp => {
+          console.log('Raw Response: ', rawResp);
+        }),
+        map(data => data.body),
+        catchError(error => {
+          console.error(error);
+          return throwError(() => new Error(errMsg));
+        }),
+      );
+  }
 }

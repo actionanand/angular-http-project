@@ -1,6 +1,7 @@
 import { Component, input, output } from '@angular/core';
 
 import { Place } from '../models/place.model';
+import { environment as env } from '../../environments/environment.development';
 
 @Component({
   selector: 'app-places',
@@ -12,6 +13,8 @@ import { Place } from '../models/place.model';
 export class PlacesComponent {
   places = input.required<Place[]>();
   selectPlace = output<Place>();
+
+  protected url = env.backendUrl;
 
   onSelectPlace(place: Place) {
     this.selectPlace.emit(place);
