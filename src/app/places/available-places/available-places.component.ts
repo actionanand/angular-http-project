@@ -1,7 +1,8 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { map, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 import { Place } from '../../models/place.model';
 import { PlacesComponent } from '../places.component';
@@ -33,6 +34,10 @@ export class AvailablePlacesComponent implements OnInit {
           console.log('Raw Response: ', rawResp);
         }),
         map(data => data.body),
+        catchError(error => {
+          console.error(error);
+          return throwError(() => new Error('Something went wrong!'));
+        }),
       )
       .subscribe({
         next: resp => {
@@ -40,6 +45,9 @@ export class AvailablePlacesComponent implements OnInit {
         },
         complete: () => {
           this.isFetching.set(false);
+        },
+        error: (err: Error) => {
+          console.error(err.message);
         },
       });
 
