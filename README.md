@@ -19,6 +19,12 @@ Change the value of `target` in `proxy file` as your backend api url
 yarn develop
 ```
 
+## Generating Environmental files in Angular 15+
+
+```sh
+ng g environments
+```
+
 ## Cloning Guide
 
 1.  Clone only the remote primary HEAD (default: origin/master)
