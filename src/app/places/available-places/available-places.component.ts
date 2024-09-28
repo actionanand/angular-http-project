@@ -25,8 +25,10 @@ export class AvailablePlacesComponent implements OnInit {
 
     const availablePlaceSub = this.placeServ.loadAvailablePlaces().subscribe({
       next: resp => {
-        this.places.set(resp?.places);
-        this.errorMsg.set('');
+        if (resp) {
+          this.places.set(resp);
+          this.errorMsg.set('');
+        }
       },
       complete: () => {
         this.isFetching.set(false);

@@ -14,7 +14,7 @@ export class PlacesComponent {
   places = input.required<Place[]>();
   selectPlace = output<Place>();
 
-  protected url = env.backendUrl;
+  protected url = env.backendImgUrl;
 
   onSelectPlace(place: Place) {
     this.selectPlace.emit(place);

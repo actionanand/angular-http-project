@@ -7,6 +7,7 @@ import { throwError } from 'rxjs';
 
 import { Place } from '../models/place.model';
 import { ErrorService } from './error.service';
+import { environment as env } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -19,15 +20,15 @@ export class PlacesService {
   private errorServ = inject(ErrorService);
 
   loadAvailablePlaces() {
-    return this.fetchPlaces('/api/v2/places', 'Error loading available places!');
+    return this.fetchPlaces(env.backendUrl + 'places.json', 'Error loading available places!');
   }
 
   loadUserPlaces() {
-    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!').pipe(
+    return this.fetchPlaces(env.backendUrl + 'user-places.json', 'Error loading user places!').pipe(
       tap({
         next: resp => {
           if (resp) {
-            this.userPlaces.set(resp.places);
+            this.userPlaces.set(resp);
           }
         },
       }),
@@ -43,7 +44,7 @@ export class PlacesService {
     }
 
     return this.http
-      .put('/api/v2/user-places', {
+      .put(env.backendUrl + 'user-places', {
         placeId: place.id,
       })
       .pipe(
@@ -63,7 +64,7 @@ export class PlacesService {
       this.userPlaces.set(prevPlaces.filter(pl => pl.id !== place.id));
     }
 
-    return this.http.delete('/api/v2/user-places/' + place.id).pipe(
+    return this.http.delete(env.backendUrl + 'user-places/' + place.id).pipe(
       catchError(err => {
         this.userPlaces.set(prevPlaces);
         this.errorServ.showError('Unable to remove the selected place!');
@@ -74,7 +75,7 @@ export class PlacesService {
 
   private fetchPlaces(url: string, errMsg: string) {
     return this.http
-      .get<{ places: Place[] }>(url, {
+      .get<Place[]>(url, {
         observe: 'response', // it'll give full response including status code
       })
       .pipe(
