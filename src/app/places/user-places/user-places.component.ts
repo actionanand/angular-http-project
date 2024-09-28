@@ -2,8 +2,8 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 import { PlacesComponent } from '../places.component';
-// import { Place } from '../../models/place.model';
 import { PlacesService } from '../../services/places.service';
+import { Place } from '../../models/place.model';
 
 @Component({
   selector: 'app-user-places',
@@ -35,5 +35,13 @@ export class UserPlacesComponent implements OnInit {
     });
 
     this.destroyRef.onDestroy(() => availablePlaceSub.unsubscribe());
+  }
+
+  onSelectPlaceRemoce(place: Place) {
+    const removePlSub = this.placeServ.removeUserPlace(place).subscribe({
+      next: resp => console.log('Place renoved! ', resp),
+    });
+
+    this.destroyRef.onDestroy(() => removePlSub.unsubscribe());
   }
 }
