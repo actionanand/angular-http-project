@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 import { Place } from '../models/place.model';
+import { ErrorService } from './error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,22 +16,61 @@ export class PlacesService {
   loadedUserPlaces = this.userPlaces.asReadonly();
 
   private http = inject(HttpClient);
+  private errorServ = inject(ErrorService);
 
   loadAvailablePlaces() {
     return this.fetchPlaces('/api/v2/places', 'Error loading available places!');
   }
 
   loadUserPlaces() {
-    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!');
+    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!').pipe(
+      tap({
+        next: resp => {
+          if (resp) {
+            this.userPlaces.set(resp.places);
+          }
+        },
+      }),
+    );
   }
 
-  addPlaceToUserPlaces(placeId: string) {
-    return this.http.put('/api/v2/user-places', {
-      placeId,
-    });
+  addPlaceToUserPlaces(place: Place) {
+    const prevPlaces = this.userPlaces();
+
+    if (!prevPlaces.some(p => p.id === place.id)) {
+      // optimistic update
+      this.userPlaces.set([...prevPlaces, place]);
+    }
+
+    return this.http
+      .put('/api/v2/user-places', {
+        placeId: place.id,
+      })
+      .pipe(
+        catchError(err => {
+          this.userPlaces.set(prevPlaces);
+          this.errorServ.showError('Unable to store the selected place!');
+          return throwError(() => new Error('Unable to store the selected place!'));
+        }),
+      );
   }
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(place: Place) {
+    const prevPlaces = this.userPlaces();
+
+    if (prevPlaces.some(p => p.id === place.id)) {
+      // optimistic update
+      this.userPlaces.set(prevPlaces.filter(pl => pl.id !== place.id));
+    }
+
+    return this.http.delete('/api/v2/user-places/' + place.id).pipe(
+      catchError(err => {
+        this.userPlaces.set(prevPlaces);
+        this.errorServ.showError('Unable to remove the selected place!');
+        return throwError(() => new Error('Unable to remove the selected place!'));
+      }),
+    );
+  }
 
   private fetchPlaces(url: string, errMsg: string) {
     return this.http

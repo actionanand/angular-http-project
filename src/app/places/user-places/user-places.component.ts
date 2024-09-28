@@ -2,8 +2,8 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 import { PlacesComponent } from '../places.component';
-import { Place } from '../../models/place.model';
 import { PlacesService } from '../../services/places.service';
+import { Place } from '../../models/place.model';
 
 @Component({
   selector: 'app-user-places',
@@ -13,21 +13,18 @@ import { PlacesService } from '../../services/places.service';
   imports: [PlacesContainerComponent, PlacesComponent],
 })
 export class UserPlacesComponent implements OnInit {
-  places = signal<Place[] | undefined>(undefined);
   isFetching = signal(false);
   errorMsg = signal('');
 
   private placeServ = inject(PlacesService);
   private destroyRef = inject(DestroyRef);
 
+  places = this.placeServ.loadedUserPlaces;
+
   ngOnInit(): void {
     this.isFetching.set(true);
 
     const availablePlaceSub = this.placeServ.loadUserPlaces().subscribe({
-      next: resp => {
-        this.places.set(resp?.places);
-        this.errorMsg.set('');
-      },
       complete: () => {
         this.isFetching.set(false);
       },
@@ -38,5 +35,13 @@ export class UserPlacesComponent implements OnInit {
     });
 
     this.destroyRef.onDestroy(() => availablePlaceSub.unsubscribe());
+  }
+
+  onSelectPlaceRemove(place: Place) {
+    const removePlSub = this.placeServ.removeUserPlace(place).subscribe({
+      next: resp => console.log('Place renoved! ', resp),
+    });
+
+    this.destroyRef.onDestroy(() => removePlSub.unsubscribe());
   }
 }

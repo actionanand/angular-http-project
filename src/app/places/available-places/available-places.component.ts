@@ -41,7 +41,7 @@ export class AvailablePlacesComponent implements OnInit {
   }
 
   onSelectPlaces(selectedPlace: Place) {
-    const selectPlaceSub = this.placeServ.addPlaceToUserPlaces(selectedPlace.id).subscribe({
+    const selectPlaceSub = this.placeServ.addPlaceToUserPlaces(selectedPlace).subscribe({
       next: resp => console.log('Place added. ', resp),
     });
 
