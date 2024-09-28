@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 import { PlacesComponent } from '../places.component';
-import { Place } from '../../models/place.model';
+// import { Place } from '../../models/place.model';
 import { PlacesService } from '../../services/places.service';
 
 @Component({
@@ -13,21 +13,18 @@ import { PlacesService } from '../../services/places.service';
   imports: [PlacesContainerComponent, PlacesComponent],
 })
 export class UserPlacesComponent implements OnInit {
-  places = signal<Place[] | undefined>(undefined);
   isFetching = signal(false);
   errorMsg = signal('');
 
   private placeServ = inject(PlacesService);
   private destroyRef = inject(DestroyRef);
 
+  places = this.placeServ.loadedUserPlaces;
+
   ngOnInit(): void {
     this.isFetching.set(true);
 
     const availablePlaceSub = this.placeServ.loadUserPlaces().subscribe({
-      next: resp => {
-        this.places.set(resp?.places);
-        this.errorMsg.set('');
-      },
       complete: () => {
         this.isFetching.set(false);
       },

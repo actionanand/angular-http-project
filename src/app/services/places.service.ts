@@ -21,13 +21,35 @@ export class PlacesService {
   }
 
   loadUserPlaces() {
-    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!');
+    return this.fetchPlaces('/api/v2/user-places', 'Error loading user places!').pipe(
+      tap({
+        next: resp => {
+          if (resp) {
+            this.userPlaces.set(resp.places);
+          }
+        },
+      }),
+    );
   }
 
-  addPlaceToUserPlaces(placeId: string) {
-    return this.http.put('/api/v2/user-places', {
-      placeId,
-    });
+  addPlaceToUserPlaces(place: Place) {
+    const prevPlaces = this.userPlaces();
+
+    if (!prevPlaces.some(p => p.id === place.id)) {
+      // optimistic update
+      this.userPlaces.set([...prevPlaces, place]);
+    }
+
+    return this.http
+      .put('/api/v2/user-places', {
+        placeId: place.id,
+      })
+      .pipe(
+        catchError(err => {
+          this.userPlaces.set(prevPlaces);
+          return throwError(() => new Error('Unable to store the selected place!'));
+        }),
+      );
   }
 
   removeUserPlace(place: Place) {}
