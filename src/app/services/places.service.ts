@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 import { Place } from '../models/place.model';
+import { ErrorService } from './error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ export class PlacesService {
   loadedUserPlaces = this.userPlaces.asReadonly();
 
   private http = inject(HttpClient);
+  private errorServ = inject(ErrorService);
 
   loadAvailablePlaces() {
     return this.fetchPlaces('/api/v2/places', 'Error loading available places!');
@@ -47,6 +49,7 @@ export class PlacesService {
       .pipe(
         catchError(err => {
           this.userPlaces.set(prevPlaces);
+          this.errorServ.showError('Unable to store the selected place!');
           return throwError(() => new Error('Unable to store the selected place!'));
         }),
       );
