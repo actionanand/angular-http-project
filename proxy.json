@@ -1,6 +1,6 @@
 {
   "/api/v2/*": {
-    "target": "https://3000-actionanand-angularhttp-six5y8k89a8.ws-us116.gitpod.io",
+    "target": "http://localhost:3000",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
@@ -8,13 +8,13 @@
       "^/api/v2/": "/"
     }
   },
-  "/api/v1/*": {
+  "/api/v2/**": {
     "target": "http://localhost:3000",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/api/v1/": "/"
+      "^/api/v2/": "/"
     }
   }
 }

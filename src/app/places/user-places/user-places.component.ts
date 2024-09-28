@@ -37,7 +37,7 @@ export class UserPlacesComponent implements OnInit {
     this.destroyRef.onDestroy(() => availablePlaceSub.unsubscribe());
   }
 
-  onSelectPlaceRemoce(place: Place) {
+  onSelectPlaceRemove(place: Place) {
     const removePlSub = this.placeServ.removeUserPlace(place).subscribe({
       next: resp => console.log('Place renoved! ', resp),
     });
