@@ -248,3 +248,66 @@ To configure the pre-commit hook, simply add a `precommit` npm script. We want t
 - [GitHub Actions for Angular](https://github.com/rodrigokamada/angular-github-actions)
 - [Angular 16 - milestone release](https://github.com/actionanand/ng16-signal-milestone-release)
 - [Colorful Console Message](https://www.samanthaming.com/tidbits/40-colorful-console-message/)
+
+## Wiki
+
+### What are Angular interceptors?
+
+Interceptors are unique Angular services that we can implement to add behavior to HTTP requests in our application. **HttpInterceptor** provides a way to intercept **HTTP requests** and **responses**. In this sense, each interceptor can handle the request entirely by itself.
+
+As the diagram above shows, the interceptors are always in the middle of an HTTP request. As middlemen, they allow us to perform operations on the requests on their way to and back from the server, making it a perfect place to centralize code for things like adding headers, passing tokens, caching, and error handling.
+
+1. [Angular Error Interceptor](https://dev.to/this-is-angular/angular-error-interceptor-12bg)
+2. [Transitioning from retryWhen to retry with Delay in RxJS](https://medium.com/@nambi.n.rajan/transitioning-from-retrywhen-to-retry-with-delay-in-rxjs-699ab6a5c7ee)
+3. [Retry Error HTTP Requests in Angular (without retryWhen)](https://blog.adnanhalilovic.com/2022/07/31/retry-error-http-requests-in-angular-without-retrywhen/)
+4. [Angular 17: HTTP Interceptors guide](https://freedium.cfd/https://medium.com/@mohsinogen/angular-17-http-interceptors-guide-417e7c8ffada)
+5. [mergeMap – RxJS Reference](https://angular.love/mergemap-rxjs-reference)
+
+```ts
+// The Old Way: `retryWhen`
+import { throwError, retryWhen, delay, tap, scan } from 'rxjs';
+
+function usingRetryWhen(duration, maxtries) {
+  return retryWhen(errors =>
+    errors.pipe(
+      scan((count, err) => {
+        if (count >= maxtries) {
+          throw err;
+        }
+        return count + 1;
+      }, 0),
+      tap(val => console.log(`#${val} Attemp with RetryWhen`)),
+      delay(duration),
+    ),
+  );
+}
+
+let triggerErrorWithRetryWhen = throwError(() => new Error('Test Error'));
+
+triggerErrorWithRetryWhen.pipe(usingRetryWhen(2000, 2)).subscribe({
+  next: val => console.log(val, 'from next'),
+  error: val => console.log(val, 'from error'),
+});
+```
+
+```ts
+// The New Way: `retry` with `delay`
+import { throwError, retry, timer } from 'rxjs';
+
+function retryWithDelay(duration, maxTries) {
+  return retry({
+    count: maxTries,
+    delay: (error, retryCount) => {
+      console.log(`Retry attempt #${retryCount}`);
+      return timer(duration);
+    },
+  });
+}
+
+let triggerErrorWithRetry = throwError(() => new Error('Test Error'));
+
+triggerErrorWithRetry.pipe(retryWithDelay(2000, 2)).subscribe({
+  next: val => console.log(val, 'from next'),
+  error: val => console.log(val, 'from error'),
+});
+```
