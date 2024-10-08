@@ -255,6 +255,8 @@ To configure the pre-commit hook, simply add a `precommit` npm script. We want t
 
 Interceptors are unique Angular services that we can implement to add behavior to HTTP requests in our application. **HttpInterceptor** provides a way to intercept **HTTP requests** and **responses**. In this sense, each interceptor can handle the request entirely by itself.
 
+![image](https://github.com/user-attachments/assets/c59153d3-4534-4c8a-9bc1-873a37a754f1)
+
 As the diagram above shows, the interceptors are always in the middle of an HTTP request. As middlemen, they allow us to perform operations on the requests on their way to and back from the server, making it a perfect place to centralize code for things like adding headers, passing tokens, caching, and error handling.
 
 1. [Angular Error Interceptor](https://dev.to/this-is-angular/angular-error-interceptor-12bg)
